@@ -71,45 +71,34 @@ class ServerCB : public BLEServerCallbacks {
 
 /* ================= DESENHO DE VIA E VEÍCULO (ESTILO AUTOMOTIVO) ================= */
 
-// Desenha o veículo (triângulo azul sólido fixo no centro)
+// Desenha o veículo (triângulo ciano sólido fixo no centro)
 void drawVehicle(int centerX, int centerY) {
-  // Asa delta com geometria precisa
+  // Asa delta com geometria precisa - aumentado e esticado
   // Ângulo no nariz: ~35° (agudo)
   // Ângulos nas asas: ~65-80° (obtusos)
   
-  // Definição dos três pontos:
+  // Definição dos três pontos (aumentados em ~30% e esticados):
   // Ponto A (nariz): à frente, ângulo agudo
   int noseX = centerX;
-  int noseY = centerY - 16;  // Nariz pontiagudo avançado
+  int noseY = centerY - 22;  // Esticado: -16 → -22 (38% mais longo)
   
   // Ponto B (asa esquerda): recuado e à esquerda
-  int leftWingX = centerX - 14;  // Deslocamento lateral
-  int leftWingY = centerY + 12;   // Recuado (mais atrás que o nariz)
+  int leftWingX = centerX - 18;  // Aumentado: -14 → -18 (29% maior)
+  int leftWingY = centerY + 16;   // Esticado: +12 → +16 (33% mais longo)
   
   // Ponto C (asa direita): recuado e à direita
-  int rightWingX = centerX + 14;  // Deslocamento lateral simétrico
-  int rightWingY = centerY + 12;   // Mesma profundidade da asa esquerda
+  int rightWingX = centerX + 18;  // Aumentado: +14 → +18 (29% maior)
+  int rightWingY = centerY + 16;   // Esticado: +12 → +16 (33% mais longo)
   
-  // Verificação das restrições:
-  // Distância A→B e A→C ≈ 30 pixels
-  // Distância B→C = 28 pixels
-  // A→B > B→C ✓ (formato delta característico)
-  
-  // Triângulo principal (asa delta)
+  // Triângulo principal (asa delta) - COR CIANO (mesma do HEADING)
   tft.fillTriangle(
     noseX, noseY,              // Ponto A (nariz, ângulo ~35°)
     leftWingX, leftWingY,      // Ponto B (asa esquerda, ângulo ~70°)
     rightWingX, rightWingY,    // Ponto C (asa direita, ângulo ~70°)
-    TFT_BLUE
+    TFT_CYAN                   // COR ALTERADA: TFT_BLUE → TFT_CYAN
   );
   
-  // Contorno branco para destacar
-  tft.drawTriangle(
-    noseX, noseY,
-    leftWingX, leftWingY,
-    rightWingX, rightWingY,
-    TFT_WHITE
-  );
+  // BORDA REMOVIDA - sem drawTriangle
 }
 
 // Desenha via RETA (linha branca vertical suave)
@@ -190,25 +179,95 @@ void drawRightCurve(int centerX, int centerY) {
 // MANTIDO PARA COMPATIBILIDADE - mas usa novo estilo
 void drawLeftArrow(int centerX, int centerY) {
   drawLeftCurve(centerX, centerY - 10);
-  drawVehicle(centerX, centerY + 20);
+  drawVehicle(centerX, centerY + 10);  // Subido: +20 → +10 (mais próximo da via)
 }
 
 // Seta para DIREITA
 void drawRightArrow(int centerX, int centerY) {
   drawRightCurve(centerX, centerY - 10);
-  drawVehicle(centerX, centerY + 20);
+  drawVehicle(centerX, centerY + 10);  // Subido: +20 → +10 (mais próximo da via)
 }
 
 // Seta para FRENTE (via reta)
 void drawStraightArrow(int centerX, int centerY) {
   drawStraightRoad(centerX, centerY);
-  drawVehicle(centerX, centerY + 30);
+  drawVehicle(centerX, centerY + 20);  // Subido: +30 → +20 (mais próximo da via)
+}
+
+// Converte graus (0-360) para pontos cardeais (N, NE, E, SE, S, SW, W, NW)
+String degreesToCardinal(int degrees) {
+  // Normalizar para 0-360
+  degrees = degrees % 360;
+  if (degrees < 0) degrees += 360;
+  
+  // Dividir em 8 setores de 45° cada (com offset de 22.5° para centralizar)
+  if (degrees >= 337.5 || degrees < 22.5) return "N";
+  else if (degrees >= 22.5 && degrees < 67.5) return "NE";
+  else if (degrees >= 67.5 && degrees < 112.5) return "E";
+  else if (degrees >= 112.5 && degrees < 157.5) return "SE";
+  else if (degrees >= 157.5 && degrees < 202.5) return "S";
+  else if (degrees >= 202.5 && degrees < 247.5) return "SW";
+  else if (degrees >= 247.5 && degrees < 292.5) return "W";
+  else return "NW";
+}
+
+// Desenha indicador de direção no canto esquerdo (seta branca estilo GPS profissional)
+void drawDirectionIndicator(char dir) {
+  int x = 20;   // Posição X no canto esquerdo
+  int y = 30;   // Posição Y superior - subida de 40 para 30 (10px mais alto)
+  
+  if (dir == 'L') {
+    // Seta para ESQUERDA (←) - Tamanho profissional 25px
+    // Linha horizontal principal (mais grossa - 5 linhas paralelas)
+    tft.drawFastHLine(x, y - 2, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y - 1, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 1, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 2, 25, TFT_WHITE);
+    
+    // Ponta da seta (mais pronunciada e grossa)
+    for (int i = 0; i < 8; i++) {
+      tft.drawLine(x, y, x + 8, y - i, TFT_WHITE);
+      tft.drawLine(x, y, x + 8, y + i, TFT_WHITE);
+    }
+  } else if (dir == 'R') {
+    // Seta para DIREITA (→) - Tamanho profissional 25px
+    // Linha horizontal principal (mais grossa - 5 linhas paralelas)
+    tft.drawFastHLine(x, y - 2, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y - 1, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 1, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 2, 25, TFT_WHITE);
+    
+    // Ponta da seta (mais pronunciada e grossa)
+    for (int i = 0; i < 8; i++) {
+      tft.drawLine(x + 24, y, x + 16, y - i, TFT_WHITE);
+      tft.drawLine(x + 24, y, x + 16, y + i, TFT_WHITE);
+    }
+  } else {
+    // Seta para FRENTE (↑) - Tamanho profissional 25px
+    // Linha vertical principal (mais grossa - 5 linhas paralelas)
+    tft.drawFastVLine(x + 10, y, 25, TFT_WHITE);
+    tft.drawFastVLine(x + 11, y, 25, TFT_WHITE);
+    tft.drawFastVLine(x + 12, y, 25, TFT_WHITE);
+    tft.drawFastVLine(x + 13, y, 25, TFT_WHITE);
+    tft.drawFastVLine(x + 14, y, 25, TFT_WHITE);
+    
+    // Ponta da seta (mais pronunciada e grossa)
+    for (int i = 0; i < 8; i++) {
+      tft.drawLine(x + 12, y, x + 12 - i, y + 8, TFT_WHITE);
+      tft.drawLine(x + 12, y, x + 12 + i, y + 8, TFT_WHITE);
+    }
+  }
 }
 
 /* ================= DISPLAY HUD ================= */
 
 void drawHUD(char dir, int dist, int speed, int heading, bool radarActive, int radarDist) {
   tft.fillScreen(TFT_BLACK);
+  
+  // ========== INDICADOR DE DIREÇÃO (canto esquerdo superior) ==========
+  drawDirectionIndicator(dir);
   
   // ========== REGIÃO CENTRAL: SETA DE NAVEGAÇÃO ==========
   int centerX = 120; // 240/2
@@ -275,11 +334,12 @@ void drawHUD(char dir, int dist, int speed, int heading, bool radarActive, int r
   
   // ========== HEADING / BÚSSOLA (canto inferior direito) ==========
   tft.setTextColor(TFT_CYAN);
-  tft.setTextFont(4);
+  tft.setTextFont(3);  // Fonte ajustada: 2 → 3
   tft.setTextDatum(BR_DATUM);
-  tft.drawString(String(heading), 230, 130, 4);
-  tft.setTextFont(2);
-  tft.drawString("deg", 230, 110, 2);
+  
+  // Converter graus para ponto cardeal (N, NE, E, etc.)
+  String cardinal = degreesToCardinal(heading);
+  tft.drawString(cardinal, 230, 130, 3);  // Fonte 3
 }
 
 /* ================= BLE CALLBACK ================= */
