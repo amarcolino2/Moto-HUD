@@ -214,35 +214,49 @@ String degreesToCardinal(int degrees) {
 // Desenha indicador de direção no canto esquerdo (seta branca estilo GPS profissional)
 void drawDirectionIndicator(char dir) {
   int x = 20;   // Posição X no canto esquerdo
-  int y = 30;   // Posição Y superior - subida de 40 para 30 (10px mais alto)
+  int y = 20;   // Posição Y superior - subida de 30 para 20 (10px mais alto)
   
   if (dir == 'L') {
-    // Seta para ESQUERDA (←) - Tamanho profissional 25px
-    // Linha horizontal principal (mais grossa - 5 linhas paralelas)
-    tft.drawFastHLine(x, y - 2, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y - 1, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y + 1, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y + 2, 25, TFT_WHITE);
+    // Seta para ESQUERDA em L (aste vertical para baixo, vira 90° à esquerda)
+    // Parte vertical (aste indo para baixo) - 5 linhas paralelas
+    tft.drawFastVLine(x + 23, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 24, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 25, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 26, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 27, y + 13, 15, TFT_WHITE);
     
-    // Ponta da seta (mais pronunciada e grossa)
+    // Parte horizontal (curva de 90° para esquerda)
+    tft.drawFastHLine(x, y + 13, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 14, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 15, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 16, 25, TFT_WHITE);
+    tft.drawFastHLine(x, y + 17, 25, TFT_WHITE);
+    
+    // Ponta da seta (apontando para esquerda)
     for (int i = 0; i < 8; i++) {
-      tft.drawLine(x, y, x + 8, y - i, TFT_WHITE);
-      tft.drawLine(x, y, x + 8, y + i, TFT_WHITE);
+      tft.drawLine(x, y + 15, x + 8, y + 15 - i, TFT_WHITE);
+      tft.drawLine(x, y + 15, x + 8, y + 15 + i, TFT_WHITE);
     }
   } else if (dir == 'R') {
-    // Seta para DIREITA (→) - Tamanho profissional 25px
-    // Linha horizontal principal (mais grossa - 5 linhas paralelas)
-    tft.drawFastHLine(x, y - 2, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y - 1, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y + 1, 25, TFT_WHITE);
-    tft.drawFastHLine(x, y + 2, 25, TFT_WHITE);
+    // Seta para DIREITA em L (aste vertical para baixo, vira 90° à direita)
+    // Parte vertical (aste indo para baixo) - 5 linhas paralelas
+    tft.drawFastVLine(x + 10, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 11, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 12, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 13, y + 13, 15, TFT_WHITE);
+    tft.drawFastVLine(x + 14, y + 13, 15, TFT_WHITE);
     
-    // Ponta da seta (mais pronunciada e grossa)
+    // Parte horizontal (curva de 90° para direita)
+    tft.drawFastHLine(x + 12, y + 13, 25, TFT_WHITE);
+    tft.drawFastHLine(x + 12, y + 14, 25, TFT_WHITE);
+    tft.drawFastHLine(x + 12, y + 15, 25, TFT_WHITE);
+    tft.drawFastHLine(x + 12, y + 16, 25, TFT_WHITE);
+    tft.drawFastHLine(x + 12, y + 17, 25, TFT_WHITE);
+    
+    // Ponta da seta (apontando para direita)
     for (int i = 0; i < 8; i++) {
-      tft.drawLine(x + 24, y, x + 16, y - i, TFT_WHITE);
-      tft.drawLine(x + 24, y, x + 16, y + i, TFT_WHITE);
+      tft.drawLine(x + 36, y + 15, x + 28, y + 15 - i, TFT_WHITE);
+      tft.drawLine(x + 36, y + 15, x + 28, y + 15 + i, TFT_WHITE);
     }
   } else {
     // Seta para FRENTE (↑) - Tamanho profissional 25px
@@ -330,16 +344,20 @@ void drawHUD(char dir, int dist, int speed, int heading, bool radarActive, int r
   tft.setTextDatum(BL_DATUM);
   tft.drawString(String(speed), 10, 130, 4);
   tft.setTextFont(2);
-  tft.drawString("km/h", 10, 110, 2);
+  tft.drawString("km/h", 10, 105, 2);  // Subido de 110 para 105 (5px mais alto)
   
   // ========== HEADING / BÚSSOLA (canto inferior direito) ==========
   tft.setTextColor(TFT_CYAN);
-  tft.setTextFont(3);  // Fonte ajustada: 2 → 3
   tft.setTextDatum(BR_DATUM);
   
   // Converter graus para ponto cardeal (N, NE, E, etc.)
   String cardinal = degreesToCardinal(heading);
-  tft.drawString(cardinal, 230, 130, 3);  // Fonte 3
+
+  
+  // Mostrar ponto cardeal (embaixo) com cor de fundo para debug
+  tft.setTextFont(3);  // Aumentando fonte: 3 → 4 para teste
+  tft.fillRect(180, 115, 50, 20, TFT_BLACK);  // Limpar área
+  tft.drawString(cardinal, 230, 135, 4);  // Movido: 130 → 135
 }
 
 /* ================= BLE CALLBACK ================= */

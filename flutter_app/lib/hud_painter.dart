@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
 
 /// Painter para HUD estilo automotivo com via curva e veículo triangular
 class HUDPainter extends CustomPainter {
@@ -73,7 +74,9 @@ class HUDPainter extends CustomPainter {
       ..color = Colors.yellow
       ..strokeWidth = 2.0;
 
-    for (double y = centerY - roadHeight / 2; y < centerY + roadHeight / 2; y += 20) {
+    for (double y = centerY - roadHeight / 2;
+        y < centerY + roadHeight / 2;
+        y += 20) {
       canvas.drawLine(
         Offset(centerX, y),
         Offset(centerX, y + 10),
@@ -120,13 +123,16 @@ class HUDPainter extends CustomPainter {
 
       // Bordas brancas (espaçadas)
       if (i % 2 == 0) {
-        canvas.drawCircle(Offset(leftEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
-        canvas.drawCircle(Offset(rightEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
+        canvas.drawCircle(
+            Offset(leftEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
+        canvas.drawCircle(
+            Offset(rightEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
       }
 
       // Linha central tracejada
       if (i % 6 < 3 && i % 2 == 0) {
-        canvas.drawCircle(Offset(centerX + xOffset, y), 1.5, dashedPaint..style = PaintingStyle.fill);
+        canvas.drawCircle(Offset(centerX + xOffset, y), 1.5,
+            dashedPaint..style = PaintingStyle.fill);
       }
     }
   }
@@ -166,12 +172,15 @@ class HUDPainter extends CustomPainter {
       );
 
       if (i % 2 == 0) {
-        canvas.drawCircle(Offset(leftEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
-        canvas.drawCircle(Offset(rightEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
+        canvas.drawCircle(
+            Offset(leftEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
+        canvas.drawCircle(
+            Offset(rightEdge, y), 2.0, linePaint..style = PaintingStyle.fill);
       }
 
       if (i % 6 < 3 && i % 2 == 0) {
-        canvas.drawCircle(Offset(centerX + xOffset, y), 1.5, dashedPaint..style = PaintingStyle.fill);
+        canvas.drawCircle(Offset(centerX + xOffset, y), 1.5,
+            dashedPaint..style = PaintingStyle.fill);
       }
     }
   }
@@ -204,6 +213,7 @@ class HUDPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant HUDPainter oldDelegate) {
-    return oldDelegate.direction != direction || oldDelegate.radarAlert != radarAlert;
+    return oldDelegate.direction != direction ||
+        oldDelegate.radarAlert != radarAlert;
   }
 }
