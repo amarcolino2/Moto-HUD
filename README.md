@@ -1,8 +1,13 @@
 Moto HUD
+
 Open Source Motorcycle Head-Up Display
+
 Um sistema de navegação HUD (Head-Up Display) para motocicletas utilizando um smartphone Android e um ESP32.
+
 O objetivo é fornecer informações essenciais de navegação diretamente no campo de visão do piloto, reduzindo o tempo em que ele precisa desviar os olhos para o painel ou celular.
+
 Projeto experimental e colaborativo.
+
 Visão Geral
 O sistema é dividido em duas partes:
 Aplicativo Android (Flutter)
@@ -50,7 +55,9 @@ Fácil reprodução
 Plataforma para pesquisas futuras
 Próxima etapa
 Atualmente o projeto está funcional na parte eletrônica e de software.
+
 O próximo desenvolvimento será o módulo óptico, responsável por transformar a pequena tela em uma imagem virtual confortável para visualização.
+
 Os estudos incluem:
 lentes asféricas
 espelho semirreflexivo (combiner)
@@ -68,7 +75,9 @@ Integração com capacetes inteligentes
 Reconhecimento de placas
 IA para previsão de riscos
 Atualizações OTA do ESP32
+
 Colaboração
+
 Este projeto foi publicado como Open Source para incentivar colaboração.
 Toda melhoria é bem-vinda:
 Pull Requests
@@ -77,7 +86,9 @@ Discussões
 Ideias
 Testes em campo
 Aviso
+
 Este projeto é experimental.
 Não substitui os equipamentos de segurança nem deve ser utilizado de forma que comprometa a atenção do piloto.
+
 Licença
 MIT
